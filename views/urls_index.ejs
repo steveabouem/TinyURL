@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Open Sans Condensed', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <% include partials/_header %>
+  <form action="/">
+    <% for( object in urls ){ %>
+      <form method="POST" action="/urls/<%= object %>">
+      <textarea rows="1" style="outline: none;" value= <%= object %> > <%= urls[object]  %></textarea>
+      <a href=<%=urls[object]%>> <span>Visit</span></a>
+      <br>
+    </form>  
+    <form method="POST" action="/urls/<%=object%>/delete">
+      <button type="submit">Delete link</button>
+    </form>
+    <br>
+    <% } %>
+    <br><br>
+    <span>Want to shorten a new link? <a href="/urls/new"> Click here</a></span>
+  </body>
+  </html>
