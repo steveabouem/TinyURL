@@ -77,6 +77,7 @@ app.get("/urls", (req, res) => {
     username: req.cookies["name"],
     urls: urlDatabase
   };
+  let username = req.cookies.name;
   res.render("urls_index", templateVars);
 });
 
@@ -112,25 +113,17 @@ app.post("/urls/:id", (req, res) => {
   let shortURL = req.body.shortURL;
   let longURL = req.body.update;
   urlDatabase[shortURL] = longURL;
-  // for (pairs in urlDatabase) {
-  //   if (urlDatabase[pairs] === longURL) {
-  //     delete urlDatabase[pairs];
-  //     urlDatabase[generateRandomString()] = longURL;
-  //   }
-  // } TO use for update of the shortHand, keeping the same long link.
   res.redirect("/urls");
 });
 
-// app.get("/login", (req, res) => {
-//   console.log("line 115");
-//   let templateVars = { urls: urlDatabase };
-//   res.render("_headers", templateVars);
-// });USELESS
+app.post("/logout", (req, res) => {
+  res.clearCookie("name");
+  res.redirect("/urls");
+});
 
 app.post("/login", (req, res) => {
   let username = req.body.username;
   res.cookie("name", username);
-
   res.redirect("/urls");
 });
 

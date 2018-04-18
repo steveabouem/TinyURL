@@ -9,7 +9,7 @@
     .login input{
       width: 180px;
     }
-
+    
     .login input:focus{
       background-color: rgb(190, 178, 178);
     }
@@ -47,15 +47,25 @@
     
   </style>
 </head>
-<div class="nav"> Welcome to TinyURL, <%=username%> :)</div> 
+<div class="nav"> 
+  Welcome to TinyURL, <%=username%> 
+</div> 
 <br>
 <div><a href="/urls">HOME</a></div>
 <br>
-<form class="login" name = "login" method="POST" action="/login">
-  <b>Username</b> :<input name ="username" type="text">
+<% if( username ) { %> 
+  <form method="POST" action="/logout">
+    <button type="submit">Logout</button>
+  </form>
   <br>
-  <b>P@55w0rd:</b><input name="password" type="password">
-  <br>
-  <button type="submit">Login</button>
-</form>
-<br>
+  <%} else { %>
+    <form class="login" name = "login" method="POST" action="/login">
+      <b>Username</b> :<input name ="username" type="text">
+      <br>
+      <b>P@55w0rd:</b><input name="password" type="password">
+      <br>
+      <button type="submit">Login</button>
+    </form> 
+    <%}%>
+    
+    
