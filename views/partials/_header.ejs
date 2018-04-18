@@ -23,6 +23,9 @@
       filter: saturate(52%);
     }
     
+    .hide {
+      visibility: hidden;
+    }
     a {
       color: rgb(3, 3, 161);
       text-decoration: none;
@@ -48,7 +51,7 @@
 <br>
 <div><a href="/urls">HOME</a></div>
 <br>
-<form class="login" method="POST" action="/login">
+<form class="login" name = "login" method="POST" action="/login">
   <b>Username</b> :<input type="text">
   <br>
   <b>P@55w0rd:</b><input type="password">

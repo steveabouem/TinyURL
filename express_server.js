@@ -99,17 +99,24 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
+  let shortURL = req.body.shortURL;
   let longURL = req.body.update;
-  console.log(urlDatabase);
-  for (pairs in urlDatabase) {
-    if (urlDatabase[pairs] === longURL) {
-      delete urlDatabase[pairs];
-      urlDatabase[generateRandomString()] = longURL;
-    }
-  }
+  urlDatabase[shortURL] = longURL;
+  // for (pairs in urlDatabase) {
+  //   if (urlDatabase[pairs] === longURL) {
+  //     delete urlDatabase[pairs];
+  //     urlDatabase[generateRandomString()] = longURL;
+  //   }
+  // } TO use for update of the shortHand, keeping the same long link.
   res.redirect("/urls");
-  console.log(urlDatabase);
 });
+
+app.get("/login", (req, res) => {
+  console.log(req.body);
+  res.render("_headers", templateVars);
+});
+
+app.post("/login", (req, res) => {});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

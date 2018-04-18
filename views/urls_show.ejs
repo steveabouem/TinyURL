@@ -4,8 +4,9 @@
   <body style="font-size:20px; padding:50px;">
     <% include partials/_header.ejs %>
     <p>Your short URL:  <b> <%= shortURL %> </b> </p>
-    <p> Original URL: <b> <%=longURL%> </b> </p>
+    <label> Original URL: <b> <%=longURL%> </b> </label>
     <form method="POST" action="/urls/:id" style="margin: 15px auto 15px 150px;">
+      <input class="hide" type="text" name="shortURL" value=<%=shortURL%> readonly>
       <input type="text" name="update" value="http://">
       <button type="submit">Update</button>
     </form>
