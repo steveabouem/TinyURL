@@ -1,36 +1,58 @@
 <head>
-    <title>TinyApp</title>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Open Sans Condensed', sans-serif;
-      }
+  <title>TinyApp</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Open Sans Condensed', sans-serif;
+    }
+    
+    .login input{
+      width: 180px;
+    }
 
-      button {
-        color: #1f72f7;
-        border-bottom: 2px solid;
-        border-bottom-color: rgb(163, 0, 90);
-      }
-
-      button:hover {
-        filter: saturate(52%);
-      }
-
-      a {
-        color: rgb(3, 3, 161);
-      }
-
-      a:hover {
-        color: rgb(226, 43, 43);
-      }
-
-      .nav {
-        font-weight: bolder;
-        color: rgb(119, 30, 30);
-      }
-    </style>
-  </head>
+    .login input:focus{
+      background-color: rgb(190, 178, 178);
+    }
+    button {
+      color: #1f72f7;
+      border-bottom: 2px solid;
+      border-bottom-color: rgb(163, 0, 90);
+    }
+    
+    button:hover {
+      filter: saturate(52%);
+    }
+    
+    a {
+      color: rgb(3, 3, 161);
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: rgb(226, 43, 43);
+    }
+    
+    .nav {
+      font-weight: bolder;
+      color: rgb(119, 30, 30);
+    }
+    
+    form {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+  </style>
+</head>
 <div class="nav"> Welcome to TinyURL.</div> 
 <br>
 <div><a href="/urls">HOME</a></div>
+<br>
+<form class="login" method="POST" action="/login">
+  <b>Username</b> :<input type="text">
+  <br>
+  <b>P@55w0rd:</b><input type="password">
+  <br>
+  <button type="submit">Login</button>
+</form>
 <br>
