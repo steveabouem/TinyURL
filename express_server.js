@@ -72,6 +72,22 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+app.post("/login", (req, res) => {
+  let username = req.body.username;
+  res.cookie("name", username);
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("name");
+  res.redirect("/urls");
+});
+
+app.get("/register", (req, res) => {
+  console.log(req.body);
+  res.render("urls_register");
+});
+
 app.get("/urls", (req, res) => {
   let templateVars = {
     username: req.cookies["name"],
@@ -113,17 +129,6 @@ app.post("/urls/:id", (req, res) => {
   let shortURL = req.body.shortURL;
   let longURL = req.body.update;
   urlDatabase[shortURL] = longURL;
-  res.redirect("/urls");
-});
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("name");
-  res.redirect("/urls");
-});
-
-app.post("/login", (req, res) => {
-  let username = req.body.username;
-  res.cookie("name", username);
   res.redirect("/urls");
 });
 
