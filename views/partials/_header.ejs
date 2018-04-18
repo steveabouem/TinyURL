@@ -47,14 +47,14 @@
     
   </style>
 </head>
-<div class="nav"> Welcome to TinyURL.</div> 
+<div class="nav"> Welcome to TinyURL, <%=username%> :)</div> 
 <br>
 <div><a href="/urls">HOME</a></div>
 <br>
 <form class="login" name = "login" method="POST" action="/login">
-  <b>Username</b> :<input type="text">
+  <b>Username</b> :<input name ="username" type="text">
   <br>
-  <b>P@55w0rd:</b><input type="password">
+  <b>P@55w0rd:</b><input name="password" type="password">
   <br>
   <button type="submit">Login</button>
 </form>
