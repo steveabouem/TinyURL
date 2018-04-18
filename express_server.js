@@ -99,7 +99,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  console.log("line 102", req.body);
+  let longURL = req.body.update;
+  console.log(urlDatabase);
+  for (pairs in urlDatabase) {
+    if (urlDatabase[pairs] === longURL) {
+      delete urlDatabase[pairs];
+      urlDatabase[generateRandomString()] = longURL;
+    }
+  }
+  res.redirect("/urls");
+  console.log(urlDatabase);
 });
 
 app.listen(PORT, () => {

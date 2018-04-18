@@ -5,8 +5,8 @@
     <% include partials/_header.ejs %>
     <p>Your short URL:  <b> <%= shortURL %> </b> </p>
     <p> Original URL: <b> <%=longURL%> </b> </p>
-    <form method="POST" action="/urls" style="margin: 15px auto 15px 150px;">
-      <input type="text" name="update" value="">
+    <form method="POST" action="/urls/:id" style="margin: 15px auto 15px 150px;">
+      <input type="text" name="update" value="http://">
       <button type="submit">Update</button>
     </form>
   </body>
