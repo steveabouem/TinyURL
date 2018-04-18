@@ -3,7 +3,11 @@
 
   <body style="font-size:20px; padding:50px;">
     <% include partials/_header.ejs %>
-    <span>Your short URL:  <%= shortURL %> </span>
-    <span> Original URL: <%=longURL%></span>
+    <p>Your short URL:  <b> <%= shortURL %> </b> </p>
+    <p> Original URL: <b> <%=longURL%> </b> </p>
+    <form method="POST" action="/urls" style="margin: 15px auto 15px 150px;">
+      <input type="text" name="update" value="">
+      <button type="submit">Update</button>
+    </form>
   </body>
 </html>

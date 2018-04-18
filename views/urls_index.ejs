@@ -6,16 +6,17 @@
   <form action="/">
     <% for( object in urls ){ %>
       <form method="POST" action="/urls/<%= object %>">
-      <textarea rows="1" cols="40" style="outline: none;" value= <%= object %> > <%= urls[object]  %></textarea>
-      <a href=<%=object%>> <span>Visit</span></a>
+        <b><%=object%></b>: <textarea rows="1" cols="40" style="outline: none;" value= <%= object %> > <%=urls[object] %></textarea>
+        <a style="text-decoration: none;" href='<%= urls[object]%>'>  <b> Visit </b> </a>
+        <br>
+      </form>  
+      <form method="POST" action="/urls/<%=object%>/delete">
+        <button style="border-radius: 3px;" type="submit"><b>Delete link</b></button>
+        <a href="/urls/<%= object %>"> <b> Edit </b> </a>
+      </form>
       <br>
-    </form>  
-    <form method="POST" action="/urls/<%=object%>/delete">
-      <button type="submit">Delete link</button>
-    </form>
-    <br>
-    <% } %>
-    <br><br>
-    <span>Want to shorten a new link? <a href="/urls/new"> Click here</a></span>
-  </body>
-  </html>
+      <% } %>
+      <br><br>
+      <span>Want to shorten a new link? <b> <a href="/urls/new"> Click here</a> </b> </span>
+    </body>
+    </html>
