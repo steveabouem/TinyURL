@@ -8,8 +8,8 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: { url: "http://www.lighthouselabs.ca", userID: "userRandomID" },
+  "9sm5xK": { url: "http://www.google.com", userID: "user2RandomID" }
 };
 
 const users = {
@@ -87,6 +87,12 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies.user_id]
   };
+  console.log("cookie ", req.cookies.user_id);
+  console.log("\n db: ", urlDatabase);
+  if (req.cookies.user_id === undefined) {
+    console.log("no id");
+    res.redirect("/register");
+  }
   res.render("urls_new", templateVars);
 });
 
@@ -128,15 +134,12 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  //verify password when emails works
-  //what to do when no email?
-
   let IDtoTest = "";
 
   for (const userID in users) {
     if (req.body.email === users[userID].email) {
       IDtoTest = userID;
-      console.log("email matched.", IDtoTest);
+      // console.log("email matched.", IDtoTest);
     }
   }
   if (IDtoTest === "") {
@@ -144,29 +147,19 @@ app.post("/login", (req, res) => {
     return;
   }
   if (users[IDtoTest].password === req.body.password) {
-    console.log("passwords match: ", IDtoTest);
-    console.log("______________________________________");
+    // console.log("passwords match: ", IDtoTest);
+    // console.log("______________________________________");
     res.cookie("user_id", IDtoTest);
     res.redirect("/");
     return;
   }
 
   if (users[IDtoTest].password !== req.body.password) {
-    console.log("passwords don't match: ", IDtoTest);
-    console.log("______________________________________");
+    // console.log("passwords don't match: ", IDtoTest);
+    // console.log("______________________________________");
     res.status(400).send("Invalid password.");
     return;
   }
-
-  // if (req.body.email !== users[IDtoTest].email) {
-  //   console.log("users", users);
-  //   console.log("__________________________");
-  //   console.log("no emial");
-  //   console.log("__________________________");
-
-  //   res.status(403).send("Invalid email.");
-  //   return;
-  // }
 });
 
 app.post("/logout", (req, res) => {
@@ -184,7 +177,11 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
-  urlDatabase[newShort] = req.body.longURL;
+  urlDatabase[newShort] = {
+    url: req.body.longURL,
+    userID: req.cookies.user_id
+  };
+  console.log("DB:  ", urlDatabase);
   res.redirect(`/urls/${newShort}`);
 });
 
@@ -203,10 +200,13 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     user: users[req.cookies.user_id],
-    shortURL: req.params.id
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id].url
   };
-  var longURL = templateVars.shortURL;
-  templateVars.longURL = urlDatabase[longURL];
+  let shortURL = req.params.id;
+  let longURL = urlDatabase[req.params.id].url;
+  console.log("longurl", longURL);
+
   res.render("urls_show", templateVars);
 });
 
