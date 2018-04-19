@@ -44,28 +44,40 @@
       margin-top: 10px;
       margin-bottom: 10px;
     }
+
+    span {
+      color: rgb(81, 8, 83);
+      font-size: 2ex;
+    }
+    .Welcome {
+      font-size: 4ex;
+      text-align: center;
+      color: rgb(81, 8, 83);
+      font-family: IDroid;
+    }
     
   </style>
 </head>
-<div class="nav"> 
-  Welcome to TinyURL, <%=username%> 
-</div> 
+ <div class="Welcome">
+   TinyURL
+ </div>
 <br>
-<div><a href="/urls">HOME</a></div>
+<div><b><a href="/urls">HOME</a></b></div>
 <br>
-<% if( username ) { %> 
+<% if( user ) { %> 
+  <div class="nav"> 
+      Welcome back  <%=user.email%>
+    </div>
   <form method="POST" action="/logout">
     <button type='submit'>Logout</button>
   </form>
   <br>
   <%} else { %>
-    <form class="login" name = "login" method="POST" action="/login">
-      <b>Username</b> :<input name ="username" type="text">
-      <br>
-      <b>P@55w0rd:</b><input name="password" type="password">
-      <br>
-      <button type="submit">Login</button>
-    </form> 
+    <span>Before continuing, please <b><a href="/register">register</a></b> first.</span>
+    <br>
+    <span>If you're already a registered user, simply login <b><a href="/login"> here</a></b></a></span>
+    <br>
+    <br>
     <%}%>
     
     
