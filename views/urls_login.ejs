@@ -15,17 +15,21 @@
     font-family: IDroid;
   }
   </style>
-  <title>T U Registration</title>
+  <title>T U Login</title>
 </head>
 <body style="font-size:20px; padding:50px;">
 
   <p>Welcome to <span>TinyURL</span>, where we have nothing better to do than make tiny urls!
-  Please provide your registration info below.</p>
+  Please provide your login info below.</p>
 
-  <form action="/register" method="POST" style="margin:150px; margin-bottom: 10px;">
-    Email: <input type="email" name="email">
-    P@55w0rd: <input type="password" name="password"> 
-    <button type="submit">Register</button>
-  </form>
+  <form method="POST" action="/login">
+    <b>email</b> :<input name ="email" type="email">
+    <br>
+    <b>P@55w0rd:</b><input name="password" type="password">
+    <br>
+    <button type="submit">Login</button>
+  </form> 
+
 </body>
 </html>
+
