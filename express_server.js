@@ -120,41 +120,52 @@ app.post("/register", (req, res) => {
 
   res.cookie("user_id", id);
   res.redirect("/urls");
-  console.log(users);
 });
 
 app.get("/login", (req, res) => {
   let templateVars = { user: users[req.cookies.user_id] };
-  console.log("get login templatevars ", templateVars);
   res.render("urls_login", templateVars);
 });
 
 app.post("/login", (req, res) => {
-  let test = {};
-  for (members in users) {
-    // console.log(" post login members: ", users[members].email);test
-    if (req.body.email === users[members].email) {
-      test = members;
+  //verify password when emails works
+  //what to do when no email?
+
+  let IDtoTest = "";
+
+  for (const userID in users) {
+    if (req.body.email === users[userID].email) {
+      IDtoTest = userID;
+      console.log("email matched.", IDtoTest);
     }
   }
-
-  if (req.body.email !== users[members].email) {
-    console.log("no emial");
-    res.status(403).send("Invalid email.");
+  if (IDtoTest === "") {
+    res.status(400).send("No valid email");
+    return;
   }
-
-  if (users[test].password === req.body.password) {
-    // console.log("satisfaction", test); test
-    res.cookie("user_id", test);
+  if (users[IDtoTest].password === req.body.password) {
+    console.log("passwords match: ", IDtoTest);
+    console.log("______________________________________");
+    res.cookie("user_id", IDtoTest);
     res.redirect("/");
-  } else if (users[test].password !== req.body.password) {
-    res.status(403).send("Invalid password.");
+    return;
   }
 
-  // for (members in users) {
-  //   if (req.body.email !== users[members].email) {
-  //     res.status(403).send("Invalid email:(");
-  //   }
+  if (users[IDtoTest].password !== req.body.password) {
+    console.log("passwords don't match: ", IDtoTest);
+    console.log("______________________________________");
+    res.status(400).send("Invalid password.");
+    return;
+  }
+
+  // if (req.body.email !== users[IDtoTest].email) {
+  //   console.log("users", users);
+  //   console.log("__________________________");
+  //   console.log("no emial");
+  //   console.log("__________________________");
+
+  //   res.status(403).send("Invalid email.");
+  //   return;
   // }
 });
 
