@@ -179,7 +179,6 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies.user_id],
     urls: urlDatabase
   };
-  let username = req.cookies.name;
   res.render("urls_index", templateVars);
 });
 
