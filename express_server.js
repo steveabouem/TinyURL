@@ -80,7 +80,7 @@ function urlsForUser(id) {
     let linkID = urlDatabase[shortURL].userID;
     if (linkID === id) {
       newDB[shortURL] = urlDatabase[shortURL];
-      console.log("newDB", newDB);
+      // console.log("newDB", newDB);
     }
   }
   return newDB;
@@ -177,7 +177,7 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies.user_id],
     urls: newDB
   };
-  console.log("templatevars.urls", templateVars);
+  // console.log("templatevars.urls", templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -223,15 +223,29 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  for (links in urlDatabase) {
-    let linkID = urlDatabase[links].userID;
-    let idVerified = req.cookies.user_id;
+  // for (links in urlDatabase) {
+  //   let linkID = urlDatabase[links].userID;
+  //   let idVerified = req.cookies.user_id;
 
-    if (linkID !== idVerified) {
-      res.status(400).send("nope");
-      return;
+  //   if (linkID !== idVerified) {
+  //     res.status(400).send("nope");
+  //     return;
+  //   }
+  // }
+  for (linkObjects in urlDatabase) {
+    if (linkObjects === req.body.shortURL) {
+      console.log(
+        "linkobjects and reqbodyshort match:  ",
+        linkObjects,
+        "\n reqbodyshort: ",
+        req.body.shortURL
+      );
+      urlDatabase[linkObjects].url = req.body.update;
     }
+    // console.log("linkobjects; ", linkObjects);
   }
+
+  console.log("req.body", req.body.update, "\n urlsDB: ", urlDatabase);
 
   res.redirect("/urls");
 });
