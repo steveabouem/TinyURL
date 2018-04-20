@@ -87,10 +87,10 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies.user_id]
   };
-  console.log("cookie ", req.cookies.user_id);
-  console.log("\n db: ", urlDatabase);
+  // console.log("cookie ", req.cookies.user_id);
+  // console.log("\n db: ", urlDatabase);
   if (req.cookies.user_id === undefined) {
-    console.log("no id");
+    // console.log("no id");
     res.redirect("/register");
   }
   res.render("urls_new", templateVars);
@@ -181,7 +181,6 @@ app.post("/urls", (req, res) => {
     url: req.body.longURL,
     userID: req.cookies.user_id
   };
-  console.log("DB:  ", urlDatabase);
   res.redirect(`/urls/${newShort}`);
 });
 
@@ -191,10 +190,23 @@ app.get("/u/:shortURL", (req, res) => {
 
   res.redirect(longURL, templateVars);
 });
-
+//req.cookies.user_id
 app.post("/urls/:id/delete", (req, res) => {
+  let linkID = urlDatabase[req.params.id].userID;
+  let idVerified = req.cookies.user_id;
   res.redirect("/urls");
-  delete urlDatabase[req.params.id];
+
+  // console.log("link userid: ", linkID);
+  // console.log("");
+  // console.log("userID ", idVerified);
+  // console.log("db: ", urlDatabase);
+
+  if (linkID === idVerified) {
+    console.log("match. proceed");
+    console.log("");
+    delete urlDatabase[req.params.id];
+  }
+  res.redirect("/urls");
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -205,8 +217,6 @@ app.get("/urls/:id", (req, res) => {
   };
   let shortURL = req.params.id;
   let longURL = urlDatabase[req.params.id].url;
-  console.log("longurl", longURL);
-
   res.render("urls_show", templateVars);
 });
 
