@@ -75,20 +75,16 @@ function generateRandomString() {
 } //generateRandomString function
 
 function urlsForUser(id) {
-  for (links in urlDatabase) {
-    let linkID = urlDatabase[links].userID;
+  let newDB = {};
+  for (const shortURL in urlDatabase) {
+    let linkID = urlDatabase[shortURL].userID;
     if (linkID === id) {
-      console.log("linkID: ", linkID, "user: ", id);
-      console.log("known user");
-      // return;
-    } else if (linkID !== id) {
-      console.log("unknown", urlDatabase[links]);
-      delete urlDatabase[links];
-      // return;
+      newDB[shortURL] = urlDatabase[shortURL];
+      console.log("newDB", newDB);
     }
-    return;
   }
-}
+  return newDB;
+} //urlsForUser function
 
 app.get("/", (req, res) => {
   let templateVars = { user: users[req.cookies.user_id] };
@@ -103,10 +99,7 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     user: users[req.cookies.user_id]
   };
-  // console.log("cookie ", req.cookies.user_id);
-  // console.log("\n db: ", urlDatabase);
   if (req.cookies.user_id === undefined) {
-    // console.log("no id");
     res.redirect("/register");
   }
   res.render("urls_new", templateVars);
@@ -155,7 +148,6 @@ app.post("/login", (req, res) => {
   for (const userID in users) {
     if (req.body.email === users[userID].email) {
       IDtoTest = userID;
-      // console.log("email matched.", IDtoTest);
     }
   }
   if (IDtoTest === "") {
@@ -163,16 +155,12 @@ app.post("/login", (req, res) => {
     return;
   }
   if (users[IDtoTest].password === req.body.password) {
-    // console.log("passwords match: ", IDtoTest);
-    // console.log("______________________________________");
     res.cookie("user_id", IDtoTest);
     res.redirect("/");
     return;
   }
 
   if (users[IDtoTest].password !== req.body.password) {
-    // console.log("passwords don't match: ", IDtoTest);
-    // console.log("______________________________________");
     res.status(400).send("Invalid password.");
     return;
   }
@@ -184,11 +172,12 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  let newDB = urlsForUser(req.cookies.user_id);
   let templateVars = {
     user: users[req.cookies.user_id],
-    urls: urlDatabase
+    urls: newDB
   };
-  urlsForUser(req.cookies.user_id);
+  console.log("templatevars.urls", templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -207,19 +196,14 @@ app.get("/u/:shortURL", (req, res) => {
 
   res.redirect(longURL, templateVars);
 });
-//req.cookies.user_id
+
 app.post("/urls/:id/delete", (req, res) => {
   let linkID = urlDatabase[req.params.id].userID;
   let idVerified = req.cookies.user_id;
   res.redirect("/urls");
 
-  // console.log("link userid: ", linkID);
-  // console.log("");
-  // console.log("userID ", idVerified);
-  // console.log("db: ", urlDatabase);
   for (links in urlDatabase) {
     if (linkID !== idVerified) {
-      console.log("NO match for link and cookie in post urls id delete");
       return;
     }
   }
@@ -239,23 +223,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  console.log("users: ", users);
   for (links in urlDatabase) {
     let linkID = urlDatabase[links].userID;
-    // console.log("loop urldb: ", urlDatabase[links].userID);
-    // console.log("cookie: ", req.cookies.user_id);
     let idVerified = req.cookies.user_id;
 
     if (linkID !== idVerified) {
-      console.log("NO match for link and cookie in post urls id");
       res.status(400).send("nope");
       return;
     }
   }
 
-  // let shortURL = req.body.shortURL;
-  // let longURL = req.body.update;
-  // urlDatabase[shortURL] = longURL;
   res.redirect("/urls");
 });
 
