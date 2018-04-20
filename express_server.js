@@ -221,9 +221,24 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  let shortURL = req.body.shortURL;
-  let longURL = req.body.update;
-  urlDatabase[shortURL] = longURL;
+  console.log("users: ", users);
+
+  for (links in urlDatabase) {
+    let linkID = urlDatabase[links].userID;
+    // console.log("loop urldb: ", urlDatabase[links].userID);
+    // console.log("cookie: ", req.cookies.user_id);
+    let idVerified = req.cookies.user_id;
+
+    if (linkID !== idVerified) {
+      console.log("NO match for link and cookie in post urls id");
+      res.status(400).send("nope");
+      return;
+    }
+  }
+
+  // let shortURL = req.body.shortURL;
+  // let longURL = req.body.update;
+  // urlDatabase[shortURL] = longURL;
   res.redirect("/urls");
 });
 
