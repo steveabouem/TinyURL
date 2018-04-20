@@ -74,6 +74,22 @@ function generateRandomString() {
   return uniqueId;
 } //generateRandomString function
 
+function urlsForUser(id) {
+  for (links in urlDatabase) {
+    let linkID = urlDatabase[links].userID;
+    if (linkID === id) {
+      console.log("linkID: ", linkID, "user: ", id);
+      console.log("known user");
+      // return;
+    } else if (linkID !== id) {
+      console.log("unknown", urlDatabase[links]);
+      delete urlDatabase[links];
+      // return;
+    }
+    return;
+  }
+}
+
 app.get("/", (req, res) => {
   let templateVars = { user: users[req.cookies.user_id] };
   res.end("Hello!", templateVars);
@@ -172,6 +188,7 @@ app.get("/urls", (req, res) => {
     user: users[req.cookies.user_id],
     urls: urlDatabase
   };
+  urlsForUser(req.cookies.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -200,12 +217,13 @@ app.post("/urls/:id/delete", (req, res) => {
   // console.log("");
   // console.log("userID ", idVerified);
   // console.log("db: ", urlDatabase);
-
-  if (linkID === idVerified) {
-    console.log("match. proceed");
-    console.log("");
-    delete urlDatabase[req.params.id];
+  for (links in urlDatabase) {
+    if (linkID !== idVerified) {
+      console.log("NO match for link and cookie in post urls id delete");
+      return;
+    }
   }
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
@@ -222,7 +240,6 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   console.log("users: ", users);
-
   for (links in urlDatabase) {
     let linkID = urlDatabase[links].userID;
     // console.log("loop urldb: ", urlDatabase[links].userID);
