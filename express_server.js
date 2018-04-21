@@ -3,6 +3,7 @@ var app = express();
 var cookieParser = require("cookie-parser");
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
 app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -115,11 +116,16 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   let email = req.body.email;
-  let password = req.body.password;
   let id = generateRandomString();
+  // console.log("bcrypt", hashedPassword,  "resulting users: ", users);
   for (user in users) {
-    if (users[user].email === email || email === "" || password === "") {
+    if (
+      users[user].email === email ||
+      email === "" ||
+      req.body.password === ""
+    ) {
       res
         .status(400)
         .send("Either you used an existing email or you didn't type anything.");
@@ -130,7 +136,7 @@ app.post("/register", (req, res) => {
   users[id] = {
     id: id,
     email: email,
-    password: password
+    password: hashedPassword
   };
 
   res.cookie("user_id", id);
@@ -146,6 +152,11 @@ app.post("/login", (req, res) => {
   let IDtoTest = "";
 
   for (const userID in users) {
+    const hashedPassword = users[userID].password; //accesses the (already encrypted) existing user password
+    let verifiedPassword = bcrypt.compareSync(
+      users[userID].password,
+      hashedPassword
+    );
     if (req.body.email === users[userID].email) {
       IDtoTest = userID;
     }
@@ -160,7 +171,7 @@ app.post("/login", (req, res) => {
     return;
   }
 
-  if (users[IDtoTest].password !== req.body.password) {
+  if (users[IDtoTest].hashedPassword !== req.body.password) {
     res.status(400).send("Invalid password.");
     return;
   }
