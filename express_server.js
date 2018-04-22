@@ -4,14 +4,29 @@ var cookieParser = require("cookie-parser");
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+let cookieSession = require("cookie-session");
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2", "key3"],
+    maxAge: 2 * 60 * 60 * 1000
+  })
+);
 app.set("view engine", "ejs");
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var urlDatabase = {
+  "243567": { url: "https://www.theverge.com", userID: "phxhoz" },
+  "295857": { url: "https://www.ufc.com", userID: "sgshgz" },
+  "498853": { url: "https://readwrite.com/", userID: "sgshgz" },
+  "770352": { url: "http://www.theverge.com", userID: "sgshgz" },
   b2xVn2: { url: "http://www.lighthouselabs.ca", userID: "userRandomID" },
-  "9sm5xK": { url: "http://www.google.com", userID: "user2RandomID" }
-};
+  "9sm5xK": { url: "http://www.google.com", userID: "user2RandomID" },
+  "092335": { url: "http://www.unsplash.com", userID: "phxhoz" },
+  kgfope: { url: "https://readwrite.com/", userID: "phxhoz" },
+  lxforq: { url: "https://www.netflix.com", userID: "sgshgz" }
+}; //
 
 const users = {
   userRandomID: {
@@ -32,6 +47,7 @@ const users = {
 };
 
 function generateRandomString() {
+  //Used to assign random IDs
   let letters = [
     "a",
     "b",
@@ -64,13 +80,13 @@ function generateRandomString() {
   let pointer = Math.round(Math.random());
   let uniqueId = "";
 
-  for (i = 0; i < 6; i++) {
-    if (pointer === 0) {
-      uniqueId += letters[Math.round(Math.random() * letters.length)];
-    } else if (pointer === 1) {
-      uniqueId += numbers[Math.round(Math.random() * numbers.length)];
-    } //if else statments
-  } //for loop
+  for (let i = 0; i < 3; i++) {
+    uniqueId += letters[Math.floor(Math.random() * letters.length)];
+  }
+
+  for (let i = 3; i < 6; i++) {
+    uniqueId += numbers[Math.floor(Math.random() * numbers.length)];
+  }
 
   return uniqueId;
 } //generateRandomString function
@@ -81,15 +97,15 @@ function urlsForUser(id) {
     let linkID = urlDatabase[shortURL].userID;
     if (linkID === id) {
       newDB[shortURL] = urlDatabase[shortURL];
-      // console.log("newDB", newDB);
+      // console.log("newDB", newDB); test
     }
   }
   return newDB;
 } //urlsForUser function
 
 app.get("/", (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
-  res.end("Hello!", templateVars);
+  let templateVars = { user: users[req.session.user_id] };
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -98,22 +114,22 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    user: users[req.cookies.user_id]
+    user: users[req.session.user_id]
   };
-  if (req.cookies.user_id === undefined) {
+  if (req.session.user_id === undefined) {
     res.redirect("/register");
   }
   res.render("urls_new", templateVars);
-});
+}); //Shorthand display page
 
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
-});
+}); //test
 
 app.get("/register", (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
+  let templateVars = { user: users[req.session.user_id] };
   res.render("urls_register", templateVars);
-});
+}); //registration page
 
 app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
@@ -134,24 +150,25 @@ app.post("/register", (req, res) => {
   }
 
   users[id] = {
+    //user is saved in the "users" database
     id: id,
     email: email,
     password: hashedPassword
   };
 
-  res.cookie("user_id", id);
+  req.session.user_id = id;
   res.redirect("/urls");
-});
+}); //regstration complete
 
 app.get("/login", (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
-  res.render("urls_login", templateVars);
+  res.render("urls_login");
 });
 
 app.post("/login", (req, res) => {
   let IDtoTest = "";
 
   for (const userID in users) {
+    //locates and verifies the user tryin to log in
     const hashedPassword = users[userID].password; //accesses the (already encrypted) existing user password
     let verifiedPassword = bcrypt.compareSync(
       users[userID].password,
@@ -166,7 +183,7 @@ app.post("/login", (req, res) => {
     return;
   }
   if (users[IDtoTest].password === req.body.password) {
-    res.cookie("user_id", IDtoTest);
+    req.session.user_id = IDtoTest;
     res.redirect("/");
     return;
   }
@@ -175,42 +192,42 @@ app.post("/login", (req, res) => {
     res.status(400).send("Invalid password.");
     return;
   }
-});
+}); //login complete
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  let newDB = urlsForUser(req.cookies.user_id);
+  let newDB = urlsForUser(req.session.user_id);
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     urls: newDB
   };
-  // console.log("templatevars.urls", templateVars);
+  // console.log("templatevars.urls", templateVars); test
   res.render("urls_index", templateVars);
-});
+}); //main page
 
 app.post("/urls", (req, res) => {
   let newShort = generateRandomString();
   urlDatabase[newShort] = {
     url: req.body.longURL,
-    userID: req.cookies.user_id
+    userID: req.session.user_id
   };
   res.redirect(`/urls/${newShort}`);
-});
+}); //shorthand creation
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
-  let templateVars = { user: users[req.cookies.user_id] };
+  let templateVars = { user: users[req.session.user_id] };
 
   res.redirect(longURL, templateVars);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   let linkID = urlDatabase[req.params.id].userID;
-  let idVerified = req.cookies.user_id;
+  let idVerified = req.session.user_id;
   res.redirect("/urls");
 
   for (links in urlDatabase) {
@@ -220,43 +237,34 @@ app.post("/urls/:id/delete", (req, res) => {
   }
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
-});
+}); //shorthand deletion from main page
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].url
   };
   let shortURL = req.params.id;
   let longURL = urlDatabase[req.params.id].url;
   res.render("urls_show", templateVars);
-});
+}); //display full shorthand info
 
 app.post("/urls/:id", (req, res) => {
-  // for (links in urlDatabase) {
-  //   let linkID = urlDatabase[links].userID;
-  //   let idVerified = req.cookies.user_id;
-
-  //   if (linkID !== idVerified) {
-  //     res.status(400).send("nope");
-  //     return;
-  //   }
-  // }
   for (linkObjects in urlDatabase) {
     if (linkObjects === req.body.shortURL) {
-      console.log(
-        "linkobjects and reqbodyshort match:  ",
-        linkObjects,
-        "\n reqbodyshort: ",
-        req.body.shortURL
-      );
       urlDatabase[linkObjects].url = req.body.update;
+      // console.log(
+      //   "linkobjects and reqbodyshort match:  ",
+      //   linkObjects,
+      //   "\n reqbodyshort: ",
+      //   req.body.shortURL
+      // ); test
     }
-    // console.log("linkobjects; ", linkObjects);
+    // console.log("linkobjects; ", linkObjects); test
   }
 
-  console.log("req.body", req.body.update, "\n urlsDB: ", urlDatabase);
+  // console.log("req.body", req.body.update, "\n urlsDB: ", urlDatabase);test
 
   res.redirect("/urls");
 });

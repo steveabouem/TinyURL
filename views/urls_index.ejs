@@ -7,7 +7,7 @@
     <% for( object in urls ){ %>
       <form method="POST" action="/urls/<%= object %>">
         <b><%=object%></b>: <textarea readonly rows="1" cols="40" style="outline: none;" value= <%= object %> > <%=urls[object].url %></textarea>
-        <a style="text-decoration: none;" href='<%= urls[object]%>'>  <b> Visit </b> </a>
+        <a style="text-decoration: none;" href='<%= urls[object].url%>'>  <b> Visit </b> </a>
         <br>
       </form>  
       <form method="POST" action="/urls/<%=object%>/delete">
