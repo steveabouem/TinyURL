@@ -143,7 +143,7 @@ app.post("/register", (req, res) => {
       res
         .status(400)
         .send("Either you used an existing email or you didn't type anything.");
-      res.redirect("/urls");
+      // res.redirect("/urls");
     }
   }
 
@@ -153,7 +153,6 @@ app.post("/register", (req, res) => {
     email: email,
     password: hashedPassword
   };
-
   req.session.user_id = id;
   res.redirect("/urls");
 }); //regstration complete
@@ -168,27 +167,25 @@ app.post("/login", (req, res) => {
   for (const userID in users) {
     //locates and verifies the user tryin to log in
     const hashedPassword = users[userID].password; //accesses the (already encrypted) existing user password
-    let verifiedPassword = bcrypt.compareSync(
-      users[userID].password,
-      hashedPassword
-    );
+
     if (req.body.email === users[userID].email) {
       IDtoTest = userID;
+      var verifiedPassword = bcrypt.compareSync(
+        req.body.password,
+        hashedPassword
+      );
     }
   }
-  console.log("password verif", users[IDtoTest]);
 
   if (IDtoTest === "") {
     res.status(400).send("No valid email");
     return;
   }
-  if (users[IDtoTest].password === req.body.password) {
+  if (verifiedPassword) {
     req.session.user_id = IDtoTest;
     res.redirect("/");
     return;
-  }
-
-  if (users[IDtoTest].hashedPassword !== req.body.password) {
+  } else {
     res.status(400).send("Invalid password.");
     return;
   }
