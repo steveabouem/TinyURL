@@ -97,7 +97,6 @@ function urlsForUser(id) {
     let linkID = urlDatabase[shortURL].userID;
     if (linkID === id) {
       newDB[shortURL] = urlDatabase[shortURL];
-      // console.log("newDB", newDB); test
     }
   }
   return newDB;
@@ -135,7 +134,6 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   let email = req.body.email;
   let id = generateRandomString();
-  // console.log("bcrypt", hashedPassword,  "resulting users: ", users);
   for (user in users) {
     if (
       users[user].email === email ||
@@ -178,6 +176,8 @@ app.post("/login", (req, res) => {
       IDtoTest = userID;
     }
   }
+  console.log("password verif", users[IDtoTest]);
+
   if (IDtoTest === "") {
     res.status(400).send("No valid email");
     return;
@@ -205,7 +205,6 @@ app.get("/urls", (req, res) => {
     user: users[req.session.user_id],
     urls: newDB
   };
-  // console.log("templatevars.urls", templateVars); test
   res.render("urls_index", templateVars);
 }); //main page
 
@@ -219,10 +218,9 @@ app.post("/urls", (req, res) => {
 }); //shorthand creation
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].url;
   let templateVars = { user: users[req.session.user_id] };
-
-  res.redirect(longURL, templateVars);
+  res.redirect(longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -254,17 +252,8 @@ app.post("/urls/:id", (req, res) => {
   for (linkObjects in urlDatabase) {
     if (linkObjects === req.body.shortURL) {
       urlDatabase[linkObjects].url = req.body.update;
-      // console.log(
-      //   "linkobjects and reqbodyshort match:  ",
-      //   linkObjects,
-      //   "\n reqbodyshort: ",
-      //   req.body.shortURL
-      // ); test
     }
-    // console.log("linkobjects; ", linkObjects); test
   }
-
-  // console.log("req.body", req.body.update, "\n urlsDB: ", urlDatabase);test
 
   res.redirect("/urls");
 });
